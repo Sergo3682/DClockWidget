@@ -20,16 +20,20 @@ int main(int argc, char* argv[])
 	{
 		if (strcmp(argv[i], "-w") == 0 || strcmp(argv[i], "--width") == 0)
 		{
-			width = atoi(argv[++i]);
+			if (sscanf(argv[++i], "%d", &width));
+			else printf("Warning! invalid input for flag %s\n", argv[i]);
 		} else if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--height") == 0)
 		{
-			height = atoi(argv[++i]);
+			if (sscanf(argv[++i], "%d", &height));
+			else printf("Warning! invalid input for flag %s\n", argv[i]);
 		}  else if (strcmp(argv[i], "-x") == 0 || strcmp(argv[i], "--pos_x") == 0)
 		{
-			pos_x = atoi(argv[++i]);
+			if (sscanf(argv[++i], "%d", &pos_x));
+			else printf("Warning! invalid input for flag %s\n", argv[i]);
 		} else if (strcmp(argv[i], "-y") == 0 || strcmp(argv[i], "--pos_y") == 0)
 		{
-			pos_y = atoi(argv[++i]);
+			if (sscanf(argv[++i], "%d", &pos_y));
+			else printf("Warning! invalid input for flag %s\n", argv[i]);
 		}
 		else if (strcmp(argv[i], "--help") == 0)
 		{
