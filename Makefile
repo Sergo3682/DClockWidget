@@ -6,3 +6,6 @@ run:
 
 clean:
 	rm ./app
+
+delete:
+	delete.sh
