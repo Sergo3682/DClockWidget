@@ -35,6 +35,6 @@ The program supports several flags. (Keep in ind that '-h' stands for height par
 
 Tip: It is generally a good idea to set x:y ratio to about 7:1. Otherwithe the window looks hella funny =-]
 
-##Exit
+## Exit
 
 Right now the only way to exit is to press ctrl+C
