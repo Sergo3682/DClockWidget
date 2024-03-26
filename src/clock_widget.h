@@ -27,6 +27,6 @@ void draw_digits(void);
 void init_digit_places(void);
 void render(void);
 void calculate_clock_scale(int, int);
-void create_digits(void);
+void create_digits(SDL_Color, SDL_Color);
 
 #endif /* CLOCK_WIDGET_HEADER */

@@ -37,12 +37,12 @@ void calculate_scale(int w, int h)
 	}
 }
 
-void draw_digit(SDL_Renderer *renderer, int n)
+void draw_digit(SDL_Renderer *renderer, int n, SDL_Color c)
 {
 	for (int i = 0; i<7; i++)
 	{
 		if((states[n]>>i) & 1)
-			SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+			SDL_SetRenderDrawColor(renderer, c.r, c.g, c.b, c.a);
 		else
 			SDL_SetRenderDrawColor(renderer, 64, 64, 64, 128);
 		SDL_RenderFillRect(renderer, &segments[i]);
@@ -51,14 +51,13 @@ void draw_digit(SDL_Renderer *renderer, int n)
 
 void draw_separator(SDL_Renderer *renderer, int x, int y)
 {
-	SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
 	SDL_Rect dot;
-	dot.w = sc.smaller_side_size;
+	dot.w = sc.smaller_side_size*2;
 	dot.x = x;
-	dot.h = sc.larger_side_size/3;
-	dot.y = y + dot.h;
+	dot.h = sc.smaller_side_size*2;
+	dot.y = y + 2*dot.h;
 	SDL_RenderFillRect(renderer, &dot);
-	dot.y = sc.larger_side_size - dot.h/2;
+	dot.y = 2*sc.larger_side_size + 4*sc.margin - 2*dot.h;
 	SDL_RenderFillRect(renderer, &dot);
 }
 

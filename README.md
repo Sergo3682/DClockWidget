@@ -1,3 +1,4 @@
+
 # DClockWidget
 ## Motivation
 
@@ -31,9 +32,16 @@ The program supports several flags. (Keep in ind that '-h' stands for height par
 | -w | -\-width | Window width | integer|
 |-h| -\-height| Window height | integer
 | \- | \-\-help | Show help | \-|
+|\-|--img-src|Select a folder with digits and separator (must include 10 ".bmp" files named s.bmp and 0.bmp to 9.bmp | a valid folder path|
+|-r| \-| Set value for red color of digits| integer from 0 to 255 |
+|-g| \-| Set value for green color of digits| integer from 0 to 255 |
+|-b| \-| Set value for blue color of digits| integer from 0 to 255 |
+|-br| \-| Set value for background red color| integer from 0 to 255 |
+|-bg| \-| Set value for background green color| integer from 0 to 255 |
+|-bb| \-| Set value for background blue color| integer from 0 to 255 |
 
 
-Tip: It is generally a good idea to set x:y ratio to about 7:1. Otherwithe the window looks hella funny =-]
+Tip: It is generally a good idea to set x:y ratio to about 7:1. Otherwise the window looks hella funny =-]
 
 ## Exit
 

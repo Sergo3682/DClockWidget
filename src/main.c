@@ -4,7 +4,6 @@
 #include <signal.h>
 #include <stdlib.h>
 
-
 #include "./clock_widget.h"
 
 #include "./seven_segment.h"
@@ -20,8 +19,9 @@ int main(int argc, char* argv[])
 	signal(SIGINT, intHandler);
 	int width = 700, height = 100;
 	int pos_x = SDL_WINDOWPOS_CENTERED, pos_y =SDL_WINDOWPOS_CENTERED;
-//	char *path = DEFAULT_PATH;
 	char *path = NULL;
+	SDL_Color c = {.r = 0, .g = 255, .b = 0};
+	SDL_Color bc = {.r = 0, .g = 0, .b = 0};
 	for (int i = 1; i < argc; i++)
 	{
 		if (strcmp(argv[i], "-w") == 0 || strcmp(argv[i], "--width") == 0)
@@ -51,14 +51,56 @@ int main(int argc, char* argv[])
 			path = malloc(len+1);
 			strcpy(path, argv[++i]);
 		}
-/*
-		else if (strcmp(argv[i], "-c") == 0 || strcmp(argv[i], "--colour") == 0)
+		else if (strcmp(argv[i], "-r") == 0)
 		{
-			print_help();
+			int temp = 0;
+			if ( ((sscanf(argv[++i], "%d", &temp)) <= 255) && (temp >= 0) )
+				c.r = temp;
+			else 
+				printf("Error. Invalid colour value for red");
 		}
-		*/ else
+		else if (strcmp(argv[i], "-g") == 0)
 		{
-			printf("Unlnown flag!\n");
+			int temp = 0;
+			if ( ((sscanf(argv[++i], "%d", &temp)) <= 255) && (temp >= 0) )
+				c.g = temp;
+			else 
+				printf("Error. Invalid colour value for green");
+		}
+		else if (strcmp(argv[i], "-b") == 0)
+		{
+			int temp = 0;
+			if ( ((sscanf(argv[++i], "%d", &temp)) <= 255) && (temp >= 0) )
+				c.b = temp;
+			else 
+				printf("Error. Invalid colour value for blue");
+		}		else if (strcmp(argv[i], "-br") == 0)
+		{
+			int temp = 0;
+			if ( ((sscanf(argv[++i], "%d", &temp)) <= 255) && (temp >= 0) )
+				bc.r = temp;
+			else 
+				printf("Error. Invalid colour value for red");
+		}
+		else if (strcmp(argv[i], "-bg") == 0)
+		{
+			int temp = 0;
+			if ( ((sscanf(argv[++i], "%d", &temp)) <= 255) && (temp >= 0) )
+				bc.g = temp;
+			else 
+				printf("Error. Invalid colour value for green");
+		}
+		else if (strcmp(argv[i], "-bb") == 0)
+		{
+			int temp = 0;
+			if ( ((sscanf(argv[++i], "%d", &temp)) <= 255) && (temp >= 0) )
+				bc.b = temp;
+			else 
+				printf("Error. Invalid colour value for blue");
+		}
+		else
+		{
+			printf("Unlnown flag: %s!\n", argv[i]);
 			print_help();
 		}
 	}
@@ -78,10 +120,9 @@ int main(int argc, char* argv[])
 		while (running)
 		{
 			get_time();
-			create_digits();
+			create_digits(c, bc);
 			SDL_Delay(10);
 		}
-		
 	}
 	printf("\n");
 	destroy_window();
@@ -97,7 +138,8 @@ void print_help()
 			"--img-src to select a folder from which to take digits (use with caution!)\n"
 			"\tnote that the format has to have the final slash i.e. 'src/img/' \n"
 			"\tnote also that the path has to contain files named 0.bmp to 9.bmp ans s.bmp for the separator\n"
-//			"-c --colour to select colour"
+			"-r -g -b parameters are used to select colour. All three flags expect an integer from 0 to 255"
+			"-br -bg -bb parameters are used to select bg colour. All three flags expect an integer from 0 to 255"
 			"--help Show help\n");
 	exit(0);
 }
@@ -196,7 +238,7 @@ void init_digit_places(void)
 
 void draw_digits(void)
 {
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	SDL_SetRenderDrawColor(renderer, 1, 1, 1, 1);
 	SDL_RenderClear(renderer);
 	int digit = tell_the_time->tm_hour/10;
 	SDL_RenderCopy(renderer, digits[digit], NULL, &digit_places[0]);
@@ -223,44 +265,46 @@ void draw_digits(void)
 	SDL_RenderPresent(renderer);
 }
 
-void create_digits(void)
+void create_digits(SDL_Color c, SDL_Color bc)
 {
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+
+	SDL_SetRenderDrawColor(renderer, bc.r, bc.g, bc.b, 255);
 	SDL_RenderClear(renderer);
-	
+
 	int digit = tell_the_time->tm_hour/10;
 	calculate_scale(digit_places[0].h, digit_places[0].w);
 	init_segments(digit_places[0].x, digit_places[0].y);
-	draw_digit(renderer, digit);
-	
+	draw_digit(renderer, digit, c);
+
 	digit = tell_the_time->tm_hour%10;
 	calculate_scale(digit_places[1].h, digit_places[1].w);
 	init_segments(digit_places[1].x, digit_places[1].y);
-	draw_digit(renderer, digit);
+	draw_digit(renderer, digit, c);
 
+	SDL_SetRenderDrawColor(renderer, c.r, c.g, c.b, 255);
 	draw_separator(renderer, digit_places[2].x, digit_places[2].y);
-
 
 	digit = tell_the_time->tm_min/10;
 	calculate_scale(digit_places[3].h, digit_places[3].w);
 	init_segments(digit_places[3].x, digit_places[3].y);
-	draw_digit(renderer, digit);
+	draw_digit(renderer, digit, c);
 	
 	digit = tell_the_time->tm_min%10;
 	calculate_scale(digit_places[4].h, digit_places[4].w);
 	init_segments(digit_places[4].x, digit_places[4].y);
-	draw_digit(renderer, digit);
+	draw_digit(renderer, digit, c);
 
+	SDL_SetRenderDrawColor(renderer, c.r, c.g, c.b, 255);
 	draw_separator(renderer, digit_places[5].x, digit_places[5].y);
 
 	digit = tell_the_time->tm_sec/10;
 	calculate_scale(digit_places[6].h, digit_places[6].w);
 	init_segments(digit_places[6].x, digit_places[6].y);
-	draw_digit(renderer, digit);
+	draw_digit(renderer, digit, c);
 
 	digit = tell_the_time->tm_sec%10;
 	calculate_scale(digit_places[7].h, digit_places[7].w);
 	init_segments(digit_places[7].x, digit_places[7].y);
-	draw_digit(renderer, digit);
+	draw_digit(renderer, digit, c);
 	SDL_RenderPresent(renderer);
 }

@@ -4,7 +4,7 @@
 #include <SDL2/SDL.h>
 #include <stdint.h>
 
-void draw_digit(SDL_Renderer *, int);
+void draw_digit(SDL_Renderer *, int, SDL_Color);
 void init_segments(int, int);
 void calculate_scale(int, int);
 void draw_separator (SDL_Renderer *, int, int);
