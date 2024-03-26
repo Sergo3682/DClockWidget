@@ -39,22 +39,30 @@ void calculate_scale(int w, int h)
 
 void draw_digit(SDL_Renderer *renderer, int n)
 {
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-	SDL_RenderClear(renderer);
 	for (int i = 0; i<7; i++)
 	{
-		
-	printf("HIIIIIII\n");
 		if((states[n]>>i) & 1)
 			SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
 		else
 			SDL_SetRenderDrawColor(renderer, 64, 64, 64, 128);
 		SDL_RenderFillRect(renderer, &segments[i]);
 	}
-	SDL_RenderPresent(renderer);
 }
 
-void init_segments(void)
+void draw_separator(SDL_Renderer *renderer, int x, int y)
+{
+	SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+	SDL_Rect dot;
+	dot.w = sc.smaller_side_size;
+	dot.x = x;
+	dot.h = sc.larger_side_size/3;
+	dot.y = y + dot.h;
+	SDL_RenderFillRect(renderer, &dot);
+	dot.y = sc.larger_side_size - dot.h/2;
+	SDL_RenderFillRect(renderer, &dot);
+}
+
+void init_segments(int x_offset, int y_offset)
 {
 	for (int i = 0; i<7; i++)
 	{
@@ -69,24 +77,24 @@ void init_segments(void)
 			segments[i].w = sc.smaller_side_size;
 		}
 	}
-	segments[0].x = sc.smaller_side_size + sc.margin;
-	segments[0].y = 0;
+	segments[0].x = x_offset + sc.smaller_side_size + sc.margin;
+	segments[0].y = y_offset;
 	
-	segments[1].x = 0;
-	segments[1].y = sc.smaller_side_size + sc.margin;
+	segments[1].x = x_offset;
+	segments[1].y = y_offset + sc.smaller_side_size + sc.margin;
 	
-	segments[2].x = sc.larger_side_size + sc.smaller_side_size + 2*sc.margin;
-	segments[2].y = sc.smaller_side_size + sc.margin;
+	segments[2].x = x_offset + sc.larger_side_size + sc.smaller_side_size + 2*sc.margin;
+	segments[2].y = y_offset + sc.smaller_side_size + sc.margin;
 	
-	segments[3].x = sc.smaller_side_size + sc.margin;
-	segments[3].y = sc.larger_side_size + sc.smaller_side_size + 2*sc.margin;
+	segments[3].x = x_offset + sc.smaller_side_size + sc.margin;
+	segments[3].y = y_offset + sc.larger_side_size + sc.smaller_side_size + 2*sc.margin;
 	
-	segments[4].x = 0;
-	segments[4].y = sc.larger_side_size + 2*(sc.smaller_side_size + sc.margin);
+	segments[4].x = x_offset;
+	segments[4].y = y_offset + sc.larger_side_size + 2*(sc.smaller_side_size + sc.margin);
 	
-	segments[5].x = sc.larger_side_size + sc.smaller_side_size + 2*sc.margin;;
-	segments[5].y = sc.larger_side_size + 2*(sc.smaller_side_size + sc.margin);
+	segments[5].x = x_offset + sc.larger_side_size + sc.smaller_side_size + 2*sc.margin;;
+	segments[5].y = y_offset + sc.larger_side_size + 2*(sc.smaller_side_size + sc.margin);
 	
-	segments[6].x = sc.smaller_side_size + sc.margin;
-	segments[6].y = 2*sc.larger_side_size + 2*sc.smaller_side_size + 4*sc.margin;
+	segments[6].x = x_offset + sc.smaller_side_size + sc.margin;
+	segments[6].y = y_offset + 2*sc.larger_side_size + 2*sc.smaller_side_size + 4*sc.margin;
 }

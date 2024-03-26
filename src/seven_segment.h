@@ -5,7 +5,8 @@
 #include <stdint.h>
 
 void draw_digit(SDL_Renderer *, int);
-void init_segments(void);
+void init_segments(int, int);
 void calculate_scale(int, int);
+void draw_separator (SDL_Renderer *, int, int);
 
 #endif /* SEVEN_SEGMENT_HEADER */

@@ -66,7 +66,6 @@ int main(int argc, char* argv[])
 	calculate_clock_scale(width, height);
 	init_digit_places();
 	if (path != NULL) {
-		//printf("%s\n", path);
 		load_imgs(path);
 		while (running)
 		{
@@ -76,7 +75,13 @@ int main(int argc, char* argv[])
 		}
 	}
 	else {
-		create_digits();
+		while (running)
+		{
+			get_time();
+			create_digits();
+			SDL_Delay(10);
+		}
+		
 	}
 	printf("\n");
 	destroy_window();
@@ -220,8 +225,42 @@ void draw_digits(void)
 
 void create_digits(void)
 {
-	printf("Creating digits so hard\n");
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	SDL_RenderClear(renderer);
+	
+	int digit = tell_the_time->tm_hour/10;
 	calculate_scale(digit_places[0].h, digit_places[0].w);
-	init_segments();
-	draw_digit(renderer, 0);
+	init_segments(digit_places[0].x, digit_places[0].y);
+	draw_digit(renderer, digit);
+	
+	digit = tell_the_time->tm_hour%10;
+	calculate_scale(digit_places[1].h, digit_places[1].w);
+	init_segments(digit_places[1].x, digit_places[1].y);
+	draw_digit(renderer, digit);
+
+	draw_separator(renderer, digit_places[2].x, digit_places[2].y);
+
+
+	digit = tell_the_time->tm_min/10;
+	calculate_scale(digit_places[3].h, digit_places[3].w);
+	init_segments(digit_places[3].x, digit_places[3].y);
+	draw_digit(renderer, digit);
+	
+	digit = tell_the_time->tm_min%10;
+	calculate_scale(digit_places[4].h, digit_places[4].w);
+	init_segments(digit_places[4].x, digit_places[4].y);
+	draw_digit(renderer, digit);
+
+	draw_separator(renderer, digit_places[5].x, digit_places[5].y);
+
+	digit = tell_the_time->tm_sec/10;
+	calculate_scale(digit_places[6].h, digit_places[6].w);
+	init_segments(digit_places[6].x, digit_places[6].y);
+	draw_digit(renderer, digit);
+
+	digit = tell_the_time->tm_sec%10;
+	calculate_scale(digit_places[7].h, digit_places[7].w);
+	init_segments(digit_places[7].x, digit_places[7].y);
+	draw_digit(renderer, digit);
+	SDL_RenderPresent(renderer);
 }
