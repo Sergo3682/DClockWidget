@@ -2,8 +2,12 @@
 #include <SDL2/SDL.h>
 #include <time.h>
 #include <signal.h>
+#include <stdlib.h>
+
 
 #include "./clock_widget.h"
+
+#include "./seven_segment.h"
 
 static volatile int running = 1;
 void intHandler(int dummy)
@@ -16,6 +20,8 @@ int main(int argc, char* argv[])
 	signal(SIGINT, intHandler);
 	int width = 700, height = 100;
 	int pos_x = SDL_WINDOWPOS_CENTERED, pos_y =SDL_WINDOWPOS_CENTERED;
+//	char *path = DEFAULT_PATH;
+	char *path = NULL;
 	for (int i = 1; i < argc; i++)
 	{
 		if (strcmp(argv[i], "-w") == 0 || strcmp(argv[i], "--width") == 0)
@@ -38,21 +44,39 @@ int main(int argc, char* argv[])
 		else if (strcmp(argv[i], "--help") == 0)
 		{
 			print_help();
-		} else
+		}
+		else if (strcmp(argv[i], "--img-src") == 0)
+		{
+			size_t len = sizeof(argv[++i]);
+			path = malloc(len+1);
+			strcpy(path, argv[++i]);
+		}
+/*
+		else if (strcmp(argv[i], "-c") == 0 || strcmp(argv[i], "--colour") == 0)
+		{
+			print_help();
+		}
+		*/ else
 		{
 			printf("Unlnown flag!\n");
 			print_help();
 		}
 	}
 	init_window(width, height, pos_x, pos_y);
-	calculate_scale(width, height);
-	load_imgs();
+	calculate_clock_scale(width, height);
 	init_digit_places();
-	while (running)
-	{
-		get_time();
-		draw_digits();
-		SDL_Delay(10);
+	if (path != NULL) {
+		//printf("%s\n", path);
+		load_imgs(path);
+		while (running)
+		{
+			get_time();
+			draw_digits();
+			SDL_Delay(10);
+		}
+	}
+	else {
+		create_digits();
 	}
 	printf("\n");
 	destroy_window();
@@ -65,11 +89,15 @@ void print_help()
 			"-y --pos_y: Set window position coordinate Y. Expects integer\n"
 			"-w --width: Set window width. Expects integer\n"
 			"-h --height: Set window height. Expects integer\n"
+			"--img-src to select a folder from which to take digits (use with caution!)\n"
+			"\tnote that the format has to have the final slash i.e. 'src/img/' \n"
+			"\tnote also that the path has to contain files named 0.bmp to 9.bmp ans s.bmp for the separator\n"
+//			"-c --colour to select colour"
 			"--help Show help\n");
 	exit(0);
 }
 
-void calculate_scale(int w, int h)
+void calculate_clock_scale(int w, int h)
 {
 	my_scale.margin_ver = h/100;
 	my_scale.margin_hor = w/100;
@@ -126,18 +154,23 @@ int destroy_window(void)
 	return 0;
 }
 
-void load_imgs(void) {
-	digits[0] = SDL_CreateTextureFromSurface(renderer, SDL_LoadBMP("src/img/0.bmp"));
-	digits[1] = SDL_CreateTextureFromSurface(renderer, SDL_LoadBMP("src/img/1.bmp"));
-	digits[2] = SDL_CreateTextureFromSurface(renderer, SDL_LoadBMP("src/img/2.bmp"));
-	digits[3] = SDL_CreateTextureFromSurface(renderer, SDL_LoadBMP("src/img/3.bmp"));
-	digits[4] = SDL_CreateTextureFromSurface(renderer, SDL_LoadBMP("src/img/4.bmp"));
-	digits[5] = SDL_CreateTextureFromSurface(renderer, SDL_LoadBMP("src/img/5.bmp"));
-	digits[6] = SDL_CreateTextureFromSurface(renderer, SDL_LoadBMP("src/img/6.bmp"));
-	digits[7] = SDL_CreateTextureFromSurface(renderer, SDL_LoadBMP("src/img/7.bmp"));
-	digits[8] = SDL_CreateTextureFromSurface(renderer, SDL_LoadBMP("src/img/8.bmp"));
-	digits[9] = SDL_CreateTextureFromSurface(renderer, SDL_LoadBMP("src/img/9.bmp"));
-	digits[10] = SDL_CreateTextureFromSurface(renderer, SDL_LoadBMP("src/img/sep.bmp"));
+void load_imgs(char *img_src) {
+	size_t len = strlen(img_src);
+	char *src = malloc(len + 5 + 1);
+	strcpy(src, img_src);
+	src[len + 1] = '.';
+	src[len + 2] = 'b';
+	src[len + 3] = 'm';
+	src[len + 4] = 'p';
+	src[len + 5] = '\0';
+	src[len] = 's';
+	digits[10] = SDL_CreateTextureFromSurface(renderer, SDL_LoadBMP(src));
+	for (int i = 0; i < 10; i++)
+	{
+		src[len] = '0'+i;
+		digits[i] = SDL_CreateTextureFromSurface(renderer, SDL_LoadBMP(src));
+		printf("%s\n", src);
+	}
 }
 
 void init_digit_places(void)
@@ -183,4 +216,12 @@ void draw_digits(void)
 	SDL_RenderCopy(renderer, digits[digit], NULL, &digit_places[7]);
 
 	SDL_RenderPresent(renderer);
+}
+
+void create_digits(void)
+{
+	printf("Creating digits so hard\n");
+	calculate_scale(digit_places[0].h, digit_places[0].w);
+	init_segments();
+	draw_digit(renderer, 0);
 }
