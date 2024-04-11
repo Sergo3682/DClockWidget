@@ -1,1 +1,5 @@
 app
+PID
+*.txt
+test.sh
+widget
